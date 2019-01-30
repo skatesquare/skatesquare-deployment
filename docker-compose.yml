@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  discovery:
+    image: skatesquare/discovery:latest
+    container_name: discovery-server
+    ports:
+      - 8761:8761
+    volumes:
+      - discovery-data:/tmp
+    restart: always
+
+  mongo:
+    image: mongo:4.0.5
+    container_name: mongodb-server
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+
+  spot-service:
+    image: skatesquare/spot-service:latest
+    container_name: spot-service
+    ports:
+      - 8080:80
+    environment:
+      SPRING_PROFILES_ACTIVE: docker-compose
+    depends_on:
+      - discovery
+      - mongo
+    restart: always
+
+volumes:
+  discovery-data:
+  mongo-data:
